@@ -1,0 +1,28 @@
+name: gitbook
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  gitbook:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: preprocessing
+      run: |
+          set -ex
+          pwd
+
+    - name: Gitbook Action
+      uses: ZanderZhao/gitbook-action@v1.2.4
+      with:
+        token: ${{ secrets.PERSONAL_TOKEN }}
+        time_zone: Asia/Shanghai
+        source_branch: 'main'
+        source_dir: /
+        source_edit_time: true
+        publish_commit_message: ${{ github.event.head_commit.message }} 

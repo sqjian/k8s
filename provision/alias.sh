@@ -3,5 +3,5 @@
 set -eux
 
 tee -a /etc/bash.bashrc <<-'EOF'
-alias sync='rsync -av --progress --delete /vagrant ~/vagrant'
+alias sync='rsync -av --progress --delete /vagrant/ ~/tmp'
 EOF

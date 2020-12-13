@@ -1,0 +1,56 @@
+{
+    "title": "k8s notes",
+    "author": "sqjian",
+    "description": "k8s notes",
+    "language": "zh-hans",
+    "styles": {
+        "website": "./styles/website.css"
+    },
+    "structure": {
+        "readme": "README.md"
+    },
+    "plugins": [
+        "-sharing",
+        "-lunr",
+        "-search",
+        "search-plus",
+        "copy-code-button",
+        "lightbox",
+        "splitter",
+        "expandable-chapters",
+        "anchors",
+        "anchor-navigation-ex",
+        "favicon",
+        "theme-comscore",
+        "tbfed-pagefooter",
+        "back-to-top-button"
+    ],
+    "pluginsConfig": {
+        "theme-default": {
+            "showLevel": true
+        },
+        "fontsettings": {
+            "theme": "white",
+            "family": "sans",
+            "size": 1
+        },
+        "anchor-navigation-ex": {
+            "showLevel": false,
+            "showGoTop": false
+        },
+        "favicon": {
+            "shortcut": "./source/images/favicon.jpg",
+            "bookmark": "./source/images/favicon.jpg",
+            "appleTouch": "./source/images/apple-touch-icon.jpg",
+            "appleTouchMore": {
+                "120x120": "./source/images/apple-touch-icon.jpg",
+                "180x180": "./source/images/apple-touch-icon.jpg"
+            }
+        },
+        "tbfed-pagefooter": {
+            "copyright": "",
+            "modify_label": "该文件最后修改时间(UTC)：",
+            "modify_format": "YYYY-MM-DD HH:mm:ss"
+        }
+    }
+}
