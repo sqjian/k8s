@@ -1,0 +1,72 @@
+Vagrant.configure('2') do |config|
+    config.vm.box = "ubuntu/focal"
+    config.vm.box_check_update = false
+
+    config.vm.provision "shell", name: "docker", path: "scripts/docker.sh"
+    config.vm.provision "shell", name: "alias", path: "scripts/alias.sh"
+
+    config.ssh.username = "root"
+    config.ssh.password = "9527"
+
+    config.vm.define "master" do |master|
+
+        master.vm.network :private_network,ip:"192.168.60.11"
+        master.vm.network "forwarded_port", guest: 8081, host: 8081
+        master.vm.network "forwarded_port", guest: 8001, host: 8001
+        master.vm.network "forwarded_port", guest: 80, host: 80
+        master.vm.network "forwarded_port", guest: 8080, host: 8080
+        master.vm.network "forwarded_port", guest: 443, host: 443
+        master.vm.hostname = "master"
+
+        master.vm.synced_folder ".", "/vagrant", disabled: true
+        master.vm.synced_folder ".", "/root/install"
+
+        $shell = "
+            set -eux
+            sed -i '/master/d' /etc/hosts
+            echo '192.168.60.11 master' >> /etc/hosts
+            echo '192.168.60.21 slave1' >> /etc/hosts
+            echo '192.168.60.22 slave2' >> /etc/hosts
+            "
+        master.vm.provision "shell", inline: $shell
+
+        master.vm.provider :virtualbox do |vb, override|
+            vb.name = "master"
+
+            vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+            vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+            vb.customize ["modifyvm", :id, "--memory", "8192"]
+            vb.customize ["modifyvm", :id, "--cpus", 4]
+        end
+    end
+
+    (1..2).each do |i|
+        config.vm.define "slave#{i}" do |slave|
+
+            slave.vm.network :private_network,ip: "192.168.60.#{20+i}"
+            slave.vm.hostname = "slave#{i}"
+
+            slave.vm.synced_folder ".", "/vagrant", disabled: true
+            slave.vm.synced_folder ".", "/root/vagrant"
+
+            $shell = "
+                set -eux
+                sed -i '/slave#{i}/d' /etc/hosts
+                echo '192.168.60.11 master' >> /etc/hosts
+                echo '192.168.60.21 slave1' >> /etc/hosts
+                echo '192.168.60.22 slave2' >> /etc/hosts
+                "
+
+            slave.vm.provision "shell", inline: $shell
+
+            slave.vm.provider :virtualbox do |vb, override|
+                vb.name = "slave#{i}"
+
+                vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+                vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+                vb.customize ["modifyvm", :id, "--memory", "8192"]
+                vb.customize ["modifyvm", :id, "--cpus", 4]
+            end
+        end
+    end
+end
