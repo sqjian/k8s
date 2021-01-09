@@ -2,6 +2,8 @@ name: gitbook
 
 on:
   push:
+    branches:
+      - main
 
 jobs:
   gitbook:
