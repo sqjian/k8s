@@ -1,0 +1,23 @@
+# 此部分描述的是rc文件本身的信息
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    # 此部分需与下面labels有重合，否则rc无法创建成功，报错
+    app: nginx
+  template:
+    # 此部分描述的是pod的信息
+    # 虽然在命名上和rc会有重复，但由于所描述的非同一维度，故不影响
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      hostNetwork: false
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 80

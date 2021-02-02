@@ -9,7 +9,7 @@ Vagrant.configure('2') do |config|
   config.vm.provision "shell", name: "bashrc", path: "provision/bashrc.sh"
   config.vm.provision "shell", name: "pip", path: "provision/pip.sh"
 
-  config.vm.synced_folder ".", "/vagrant", disabled: false
+  config.vm.synced_folder "./..", "/vagrant", disabled: false
 
   config.ssh.username = "root"
   config.ssh.password = "9527"
