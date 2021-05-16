@@ -1,0 +1,60 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure('2') do |config|
+  config.vm.box = "ubuntu/focal"
+  config.vm.box_check_update = false
+
+  config.vm.provision "shell", name: "docker", path: "provision/docker.sh"
+  config.vm.provision "shell", name: "bashrc", path: "provision/bashrc.sh"
+  config.vm.provision "shell", name: "pip", path: "provision/pip.sh"
+
+  config.vm.synced_folder ".", "/vagrant", disabled: false
+
+  config.ssh.username = "root"
+  config.ssh.password = "9527"
+
+  config.vm.define "master" do |master|
+    master.vm.hostname = "master"
+    master.vm.network :private_network,ip:"192.168.60.11"
+
+    $hosts = "
+        set -eux
+        sed -i '/master/d' /etc/hosts
+        echo '192.168.60.11 master' >> /etc/hosts
+        echo '192.168.60.21 slave' >> /etc/hosts
+        "
+    master.vm.provision "shell", inline: $hosts
+
+    master.vm.provider :virtualbox do |vb, override|
+        vb.name = "master"
+
+        vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+        vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+        vb.customize ["modifyvm", :id, "--memory", "65536"]
+        vb.customize ["modifyvm", :id, "--cpus", 32]
+    end
+  end
+
+  config.vm.define "slave" do |slave|
+    slave.vm.hostname = "slave"
+    slave.vm.network :private_network,ip:"192.168.60.21"
+
+    $hosts = "
+        set -eux
+        sed -i '/slave/d' /etc/hosts
+        echo '192.168.60.11 master' >> /etc/hosts
+        echo '192.168.60.21 slave' >> /etc/hosts
+        "
+    slave.vm.provision "shell", inline: $hosts
+
+    slave.vm.provider :virtualbox do |vb, override|
+        vb.name = "slave"
+
+        vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+        vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
+        vb.customize ["modifyvm", :id, "--memory", "65536"]
+        vb.customize ["modifyvm", :id, "--cpus", 32]
+    end
+  end
+end
